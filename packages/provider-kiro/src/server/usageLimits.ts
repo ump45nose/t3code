@@ -11,7 +11,7 @@ import * as FileSystem from "effect/FileSystem";
 import * as Path from "effect/Path";
 import * as ChildProcess from "effect/process/ChildProcess";
 
-export function kiroUsageWindows(output: string) {
+function kiroUsageWindows(output: string) {
   const match = output.match(/^Credits\s*\([^\n]*\),\s*([\d.]+)%\s*$/im);
   if (!match) return [];
   const percent = Number(match[1]);

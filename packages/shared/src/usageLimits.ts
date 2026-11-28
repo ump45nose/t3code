@@ -29,8 +29,8 @@ export function exhaustedUsageWindow(
   now: number,
   model?: string,
 ) {
-  // Kiro's plan credits can be exhausted while bonuses or overage remain available.
-  if (provider?.driver === "kiro") return undefined;
+  // These displayed limits cannot establish whether the active account can run a model.
+  if (provider?.driver === "kiro" || provider?.driver === "antigravity") return undefined;
   const windows = provider?.usageLimits?.windows ?? [];
   const exhausted = windows.filter(
     (window) =>
@@ -544,6 +544,16 @@ function hasDuplicateCursorTotal(pool: LimitPool): boolean {
 }
 
 export function displayLimitWindows(pool: LimitPool) {
+  if (pool.driver === "antigravity") {
+    return [...pool.windows].sort(
+      (left, right) =>
+        Number(!left.id.startsWith("gemini-")) - Number(!right.id.startsWith("gemini-")) ||
+        left.id
+          .replace(/-(5h|weekly|quota)$/, "")
+          .localeCompare(right.id.replace(/-(5h|weekly|quota)$/, "")) ||
+        WINDOW_KIND_ORDER[left.kind] - WINDOW_KIND_ORDER[right.kind],
+    );
+  }
   if (pool.driver !== "cursor") return pool.windows;
   const hasAuto = pool.windows.some((window) => window.id === "autoPercentUsed");
   const hasApi = pool.windows.some((window) => window.id === "apiPercentUsed");
