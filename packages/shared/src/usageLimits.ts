@@ -29,6 +29,8 @@ export function exhaustedUsageWindow(
   now: number,
   model?: string,
 ) {
+  // Kiro's plan credits can be exhausted while bonuses or overage remain available.
+  if (provider?.driver === "kiro") return undefined;
   const windows = provider?.usageLimits?.windows ?? [];
   const exhausted = windows.filter(
     (window) =>
